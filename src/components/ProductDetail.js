@@ -6,7 +6,22 @@ import Img from "gatsby-image"
 const ProductDetail = ({ product }) => {
   const [selectedVariant, setVariant] = useState(product.variants[0])
   const { client } = useContext(StoreContext)
-  console.log("client", client)
+
+  const addToCart = async variantId => {
+    const newCheckout = await client.checkout.create()
+    const lineItems = [
+      {
+        variantId: variantId.replace("Shopify__ProductVariant__", ""),
+        quantity: 1,
+      },
+    ]
+    const addItems = await client.checkout.addLineItems(
+      newCheckout.id,
+      lineItems
+    )
+    window.open(addItems.webUrl, "_blank")
+    console.log("addItems", addItems.webUrl)
+  }
 
   return (
     <Layout>
@@ -30,6 +45,7 @@ const ProductDetail = ({ product }) => {
           </option>
         ))}
       </select>
+      <button onClick={() => addToCart(selectedVariant.id)}>Buy Now</button>
     </Layout>
   )
 }
